@@ -1,0 +1,34 @@
+{
+  "stato": "Provo da tre giorni a collegare il conto Stripe e continua a fallire. Sto perdendo vendite, aiutatemi subito.",
+  "domande": {
+    "urgente": {
+      "tipo": "si_no",
+      "istruzioni": "Il messaggio esprime urgenza o una scadenza"
+    },
+    "reparto": {
+      "tipo": "scelta",
+      "istruzioni": "Chi deve prendere in carico la richiesta",
+      "opzioni": {
+        "pagamenti": "Incassi, fatture, rimborsi",
+        "tecnico": "Errori, malfunzionamenti, cali del servizio",
+        "commerciale": "Preventivi e nuovi contratti"
+      }
+    },
+    "nervoso": {
+      "tipo": "voto",
+      "istruzioni": "Quanto e' scontento chi scrive",
+      "livelli": ["Tranquillo", "Infastidito", "Furioso"]
+    },
+    "ore": {
+      "tipo": "numero",
+      "istruzioni": "Entro quante ore va data una risposta",
+      "unita": "ore",
+      "ancore": [
+        {"valore": 1, "descrizione": "Subito"},
+        {"valore": 8, "descrizione": "In giornata"},
+        {"valore": 48, "descrizione": "Entro due giorni"},
+        {"valore": 168, "descrizione": "Entro la settimana"}
+      ]
+    }
+  }
+}

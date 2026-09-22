@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+modelli/
+risultati/locale-*
+/tmp/
+dist/
+build/
+*.egg-info/
+.DS_Store

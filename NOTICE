@@ -1,0 +1,25 @@
+Bivio
+Copyright 2026 Federico Boggia
+
+Distribuito sotto Apache License 2.0 (vedi LICENSE).
+
+Questo prodotto non contiene codice di terzi. Quello che scarica a parte, e che
+tiene la propria licenza, e':
+
+- llama.cpp (MIT) — https://github.com/ggml-org/llama.cpp
+  usato attraverso llama-cpp-python (MIT), https://github.com/abetlen/llama-cpp-python
+
+- Qwen3-4B-Instruct-2507 (Apache-2.0) — https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507
+  nella conversione GGUF di unsloth,
+  https://huggingface.co/unsloth/Qwen3-4B-Instruct-2507-GGUF
+
+- Qwen3-1.7B (Apache-2.0) — https://huggingface.co/Qwen/Qwen3-1.7B
+  nella conversione GGUF di Qwen, https://huggingface.co/Qwen/Qwen3-1.7B-GGUF
+
+Riconoscimenti, senza che nessun file di questi progetti sia copiato qui dentro:
+
+- TypeSafe AI, per l'idea dei System One model e per la forma dell'API che
+  /v1/systemone rifa'. «Jev» e «TypeSafe» appartengono a chi li ha registrati.
+- SemIf di TheoLeeCJ (MIT), https://github.com/TheoLeeCJ/SemIf
+- Rizzo Flow di Simone Rizzo (Apache-2.0),
+  https://github.com/Rizzo-AI-Academy/rizzo-flow

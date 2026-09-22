@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bivio · campo di prova</title>
+<style>
+  :root{
+    --rosso:#c2001c; --rosso-scuro:#960015;
+    --inch:#0f172a; --carta:#ffffff; --fondo:#f1f5f9; --bordo:#e2e8f0;
+    --muto:#64748b; --verde:#15803d; --giallo:#b45309;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-tema="chiaro"]){
+      --inch:#e2e8f0; --carta:#1e293b; --fondo:#0f172a; --bordo:#334155; --muto:#94a3b8;
+      --verde:#4ade80; --giallo:#fbbf24;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fondo);color:var(--inch);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  header{background:var(--rosso);color:#fff;padding:14px 16px;display:flex;
+    flex-wrap:wrap;gap:10px;align-items:center}
+  header h1{margin:0;font-size:17px;letter-spacing:-.01em}
+  header .via{opacity:.85;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  header .destra{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:12.5px}
+  main{max-width:1180px;margin:0 auto;padding:16px;display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+  @media (max-width:900px){main{grid-template-columns:1fr}}
+  .scheda{background:var(--carta);border:1px solid var(--bordo);border-radius:14px;padding:14px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muto);
+    margin:0 0 10px}
+  textarea,input,select{width:100%;padding:8px 10px;border:1px solid var(--bordo);
+    border-radius:9px;background:var(--fondo);color:var(--inch);font:inherit}
+  textarea{resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+  button{border:0;border-radius:9px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer}
+  .primario{background:var(--rosso);color:#fff}
+  .primario:hover{background:var(--rosso-scuro)}
+  .secondario{background:var(--fondo);color:var(--inch);border:1px solid var(--bordo);font-weight:500}
+  .riga{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .domanda{border:1px solid var(--bordo);border-radius:11px;padding:10px;margin-bottom:10px;
+    background:var(--fondo)}
+  .domanda .capo{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .domanda .capo input{flex:0 0 130px}
+  .domanda .capo select{flex:0 0 120px}
+  .via-via{font-size:12px;color:var(--muto);margin:6px 0 2px}
+  .barra{height:9px;background:var(--bordo);border-radius:5px;overflow:hidden;margin:2px 0 7px}
+  .barra i{display:block;height:100%;background:var(--rosso);border-radius:5px;
+    transition:width .25s ease}
+  .esito{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--bordo)}
+  .esito:last-child{border:0;margin:0;padding:0}
+  .esito .titolo{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .esito .titolo b{font-size:15px}
+  .esito .valore{font-weight:700;color:var(--rosso)}
+  .opz{display:flex;justify-content:space-between;font-size:13px}
+  .opz span:last-child{font-family:ui-monospace,Menlo,monospace;color:var(--muto)}
+  .muto{color:var(--muto);font-size:12.5px}
+  pre{background:var(--fondo);border:1px solid var(--bordo);border-radius:9px;padding:10px;
+    overflow:auto;font-size:12px;margin:0}
+  .pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11.5px;
+    background:var(--fondo);border:1px solid var(--bordo);color:var(--muto)}
+  .pill.giallo{color:var(--giallo);border-color:currentColor}
+  .schede{display:flex;gap:6px;margin-bottom:10px}
+  .schede button{padding:5px 10px;font-size:12.5px}
+  .schede button[aria-pressed=true]{background:var(--rosso);color:#fff}
+  a{color:var(--rosso)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Bivio · campo di prova</h1>
+  <span class="via" id="modello">…</span>
+  <div class="destra">
+    <label><input type="checkbox" id="astensione" style="width:auto"> astensione</label>
+    <a href="https://github.com/TheRealF/bivio" style="color:#fff">github</a>
+  </div>
+</header>
+
+<main>
+  <section class="scheda">
+    <div class="schede">
+      <button class="secondario" id="t-modulo" aria-pressed="true">Modulo</button>
+      <button class="secondario" id="t-json" aria-pressed="false">JSON</button>
+      <select id="esempi" style="width:auto;margin-left:auto">
+        <option value="">Esempi…</option>
+      </select>
+    </div>
+
+    <div id="modulo">
+      <h2>Stato</h2>
+      <textarea id="stato" rows="8"></textarea>
+      <h2 style="margin-top:14px">Domande</h2>
+      <div id="domande"></div>
+      <div class="riga">
+        <button class="secondario" id="aggiungi">+ domanda</button>
+        <button class="primario" id="vai" style="margin-left:auto">Decidi</button>
+      </div>
+    </div>
+
+    <div id="grezzo" hidden>
+      <h2>Richiesta</h2>
+      <textarea id="corpo" rows="20"></textarea>
+      <div class="riga" style="margin-top:10px">
+        <select id="porta-api" style="width:auto">
+          <option value="/v1/decisioni">/v1/decisioni</option>
+          <option value="/v1/systemone">/v1/systemone (forma Jev)</option>
+        </select>
+        <button class="primario" id="vai2" style="margin-left:auto">Decidi</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="scheda">
+    <h2>Risposte</h2>
+    <div id="risposte"><p class="muto">Premi «Decidi».</p></div>
+    <div id="misure" class="muto" style="margin-top:12px"></div>
+    <h2 style="margin-top:16px">Lo stesso da riga di comando</h2>
+    <pre id="curl">—</pre>
+  </section>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const ESEMPI = {
+  "Ticket di assistenza": {
+    stato: "Provo da tre giorni a collegare il conto Stripe e continua a fallire.\nSto perdendo vendite, aiutatemi subito.",
+    domande: [
+      {nome:"urgente", tipo:"si_no", istruzioni:"Il messaggio esprime urgenza o una scadenza", opzioni:""},
+      {nome:"reparto", tipo:"scelta", istruzioni:"Chi deve prendere in carico la richiesta",
+       opzioni:"pagamenti: Incassi, fatture, rimborsi\ntecnico: Errori e malfunzionamenti\ncommerciale: Preventivi e nuovi contratti"},
+      {nome:"nervoso", tipo:"voto", istruzioni:"Quanto e' scontento chi scrive",
+       opzioni:"Tranquillo\nInfastidito\nFurioso"}
+    ]
+  },
+  "Clausola di contratto": {
+    stato: "Il pagamento avverra' a sessanta giorni data fattura fine mese.\nIl contratto si rinnova tacitamente salvo disdetta novanta giorni prima.",
+    domande: [
+      {nome:"pagamento_lungo", tipo:"si_no", istruzioni:"Il termine di pagamento supera i 30 giorni", opzioni:""},
+      {nome:"rinnovo", tipo:"si_no", istruzioni:"Il contratto prevede il rinnovo tacito", opzioni:""},
+      {nome:"rischio", tipo:"voto", istruzioni:"Quanto e' sbilanciato a sfavore di chi compra",
+       opzioni:"Equilibrato\nUn po' sbilanciato\nMolto sbilanciato"}
+    ]
+  },
+  "Spesa da registrare": {
+    stato: "Scontrino: due caffe' e un tramezzino al bar sotto l'ufficio, 7,40 euro.",
+    domande: [
+      {nome:"voce", tipo:"scelta", istruzioni:"In che voce di spesa va registrato",
+       opzioni:"vitto: Pasti e bar\nviaggi: Treni, aerei, alberghi\nmateriale: Cancelleria\nformazione: Corsi e libri"},
+      {nome:"importo", tipo:"numero", istruzioni:"Quanto e' grande la spesa", opzioni:"5: Pochi euro\n50: Qualche decina\n500: Qualche centinaio\n5000: Migliaia"}
+    ]
+  },
+  "Cancello su un agente": {
+    stato: "L'agente sta per eseguire: DELETE FROM ordini WHERE anno < 2024",
+    domande: [
+      {nome:"pericolosa", tipo:"si_no", istruzioni:"L'operazione cancella dati in modo non recuperabile", opzioni:""},
+      {nome:"chi", tipo:"scelta", istruzioni:"Chi deve autorizzare questa operazione",
+       opzioni:"nessuno: Si puo' eseguire da sola\navviso: Si esegue ma va registrata\npersona: Serve il via libera di una persona"}
+    ]
+  }
+};
+
+function creaDomanda(d){
+  d = d || {nome:"domanda"+($("#domande").children.length+1), tipo:"si_no", istruzioni:"", opzioni:""};
+  const el = document.createElement("div");
+  el.className = "domanda";
+  el.innerHTML = `
+    <div class="capo">
+      <input class="nome" value="${d.nome}" placeholder="nome">
+      <select class="tipo">
+        <option value="si_no">si_no</option><option value="scelta">scelta</option>
+        <option value="voto">voto</option><option value="numero">numero</option>
+      </select>
+      <button class="secondario via" title="togli">×</button>
+    </div>
+    <input class="istruzioni" value="${(d.istruzioni||"").replace(/"/g,'&quot;')}" placeholder="che cosa chiedi">
+    <textarea class="opzioni" rows="3" placeholder="una per riga">${d.opzioni||""}</textarea>
+    <div class="muto aiuto"></div>`;
+  el.querySelector(".tipo").value = d.tipo;
+  el.querySelector(".via").onclick = () => el.remove();
+  const aggiorna = () => {
+    const t = el.querySelector(".tipo").value;
+    const o = el.querySelector(".opzioni");
+    o.hidden = (t === "si_no");
+    el.querySelector(".aiuto").textContent = {
+      si_no:"Torna vero o falso, con la probabilita' del si'.",
+      scelta:"Una riga per opzione: «id: descrizione».",
+      voto:"Una riga per livello, dal piu' basso al piu' alto.",
+      numero:"Una riga per ancora: «valore: descrizione», in ordine crescente."
+    }[t];
+  };
+  el.querySelector(".tipo").onchange = aggiorna; aggiorna();
+  $("#domande").appendChild(el);
+}
+
+function leggiModulo(){
+  const domande = {};
+  for (const el of $("#domande").children){
+    const nome = el.querySelector(".nome").value.trim() || "domanda";
+    const tipo = el.querySelector(".tipo").value;
+    const istruzioni = el.querySelector(".istruzioni").value.trim();
+    const righe = el.querySelector(".opzioni").value.split("\n").map(r=>r.trim()).filter(Boolean);
+    const d = {tipo, istruzioni};
+    if (tipo === "scelta"){
+      d.opzioni = {};
+      righe.forEach(r => { const i = r.indexOf(":");
+        if (i>0) d.opzioni[r.slice(0,i).trim()] = r.slice(i+1).trim(); else d.opzioni[r]=""; });
+    } else if (tipo === "voto"){ d.opzioni = righe; }
+    else if (tipo === "numero"){
+      d.ancore = righe.map(r => { const i = r.indexOf(":");
+        return {valore: parseFloat(i>0?r.slice(0,i):r), descrizione: i>0?r.slice(i+1).trim():""}; });
+    }
+    domande[nome] = d;
+  }
+  return {stato: $("#stato").value, domande, astensione: $("#astensione").checked};
+}
+
+function barra(p){ return `<div class="barra"><i style="width:${(p*100).toFixed(1)}%"></i></div>`; }
+
+function disegna(dati){
+  const box = $("#risposte");
+  const risposte = dati.risposte || dati.answers;
+  if (!risposte){ box.innerHTML = `<pre>${JSON.stringify(dati,null,2)}</pre>`; return; }
+  box.innerHTML = "";
+  for (const [nome, r] of Object.entries(risposte)){
+    const prob = r.probabilita || r.probabilities ||
+      (r.noul !== undefined ? {"si": r.noul, "no": 1-r.noul} : {});
+    let valore = r.valore !== undefined ? r.valore : (r.choice ?? r.score ?? r.noul ?? r.value);
+    if (valore === true) valore = "vero"; if (valore === false) valore = "falso";
+    if (valore === null || valore === undefined) valore = "—";
+    const stato = r.stato && r.stato !== "ok" ? `<span class="pill giallo">${r.stato}</span>` : "";
+    const conf = (r.confidenza ?? r.confidence);
+    const d = document.createElement("div");
+    d.className = "esito";
+    d.innerHTML = `<div class="titolo"><b>${nome}</b><span class="valore">${valore}</span></div>
+      <div class="muto">${stato} ${conf!==undefined?`confidenza ${(+conf).toFixed(3)}`:""}</div>` +
+      Object.entries(prob).sort((a,b)=>b[1]-a[1]).map(([k,p]) => {
+        const leg = (r.legenda || r.legend || {})[k];
+        return `<div class="opz"><span>${leg ? leg + " <i style='opacity:.5'>(" + k + ")</i>" : k}</span>` +
+               `<span>${(+p).toFixed(4)}</span></div>${barra(p)}`;
+      }).join("");
+    box.appendChild(d);
+  }
+  const m = dati.misure || (dati.x_bivio && dati.x_bivio.misure) || {};
+  const c = dati.consumo || dati.usage || {};
+  $("#misure").textContent =
+    `${m.domande ?? Object.keys(risposte).length} decisioni · ${m.ms_totali ?? "?"} ms in tutto ` +
+    `(stato ${m.ms_stato ?? "?"} ms, domande ${m.ms_domande ?? "?"} ms) · ` +
+    `${c.token_ingresso ?? c.input_tokens ?? "?"} token in ingresso · 0 generati`;
+}
+
+async function manda(via, corpo){
+  $("#curl").textContent =
+    `curl ${location.origin}${via} \\\n  -H 'Content-Type: application/json' \\\n  -d '` +
+    JSON.stringify(corpo) + `'`;
+  $("#risposte").innerHTML = '<p class="muto">Sto pensando…</p>';
+  try{
+    const r = await fetch(via, {method:"POST", headers:{"Content-Type":"application/json"},
+                               body: JSON.stringify(corpo)});
+    disegna(await r.json());
+  }catch(e){ $("#risposte").innerHTML = `<pre>${e}</pre>`; }
+}
+
+$("#aggiungi").onclick = () => creaDomanda();
+$("#vai").onclick = () => manda("/v1/decisioni", leggiModulo());
+$("#vai2").onclick = () => {
+  try { manda($("#porta-api").value, JSON.parse($("#corpo").value)); }
+  catch(e){ $("#risposte").innerHTML = `<pre>JSON non valido: ${e}</pre>`; }
+};
+$("#t-modulo").onclick = () => {
+  $("#modulo").hidden=false; $("#grezzo").hidden=true;
+  $("#t-modulo").setAttribute("aria-pressed","true"); $("#t-json").setAttribute("aria-pressed","false");
+};
+$("#t-json").onclick = () => {
+  $("#corpo").value = JSON.stringify(leggiModulo(), null, 2);
+  $("#modulo").hidden=true; $("#grezzo").hidden=false;
+  $("#t-json").setAttribute("aria-pressed","true"); $("#t-modulo").setAttribute("aria-pressed","false");
+};
+$("#esempi").onchange = (e) => {
+  const x = ESEMPI[e.target.value]; if (!x) return;
+  $("#stato").value = x.stato; $("#domande").innerHTML = "";
+  x.domande.forEach(creaDomanda); e.target.value = "";
+};
+
+Object.keys(ESEMPI).forEach(k => {
+  const o = document.createElement("option"); o.value=o.textContent=k; $("#esempi").appendChild(o);
+});
+$("#esempi").value = "Ticket di assistenza"; $("#esempi").onchange({target:$("#esempi")});
+fetch("/salute").then(r=>r.json()).then(s => {
+  $("#modello").textContent = s.modello + " · prompt " + s.prompt + (s.taratura ? " · tarato" : "");
+});
+</script>
+</body>
+</html>

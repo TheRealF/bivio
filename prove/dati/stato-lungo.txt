@@ -1,0 +1,84 @@
+CONTRATTO DI FORNITURA DI SERVIZI INFORMATICI E DI FORMAZIONE
+
+Tra la societa' Mareggiata S.r.l., con sede in Livorno, via del Porto 14, partita IVA
+01234567890, in persona del legale rappresentante pro tempore (di seguito "il Committente"),
+e lo studio Pietra Serena di Anna Gori, con sede in Pisa, lungarno Mediceo 3, partita IVA
+09876543210 (di seguito "il Fornitore").
+
+Articolo 1 - Oggetto
+Il Fornitore si impegna a progettare, realizzare e mantenere il sistema di gestione degli
+ordini del Committente, comprensivo di anagrafica clienti, catalogo articoli, emissione dei
+documenti di trasporto e collegamento con il gestionale contabile gia' in uso. Sono compresi
+la migrazione dei dati storici degli ultimi cinque anni e due giornate di formazione per il
+personale amministrativo.
+
+Articolo 2 - Durata
+Il presente contratto ha durata di ventiquattro mesi a decorrere dal 1 marzo. Alla scadenza
+il contratto si intende rinnovato tacitamente per ulteriori dodici mesi, salvo disdetta
+comunicata da una delle parti a mezzo posta elettronica certificata almeno novanta giorni
+prima della scadenza.
+
+Articolo 3 - Corrispettivo e termini di pagamento
+Il corrispettivo per la realizzazione e' stabilito in euro 34.000 oltre IVA, da corrispondersi
+secondo il seguente piano: il 30 per cento alla firma, il 40 per cento alla consegna
+dell'ambiente di prova, il restante 30 per cento al collaudo positivo. Il canone di
+manutenzione e' fissato in euro 480 mensili oltre IVA. Le fatture saranno emesse il primo
+giorno del mese e il pagamento avverra' a sessanta giorni data fattura fine mese. In caso di
+ritardo nei pagamenti superiore a trenta giorni il Fornitore ha facolta' di sospendere il
+servizio previo avviso scritto di dieci giorni.
+
+Articolo 4 - Livelli di servizio
+Il Fornitore garantisce la disponibilita' del sistema per il 99,5 per cento del tempo su base
+mensile, escluse le finestre di manutenzione programmata comunicate con almeno cinque giorni
+di anticipo. Per i guasti bloccanti, intesi come l'impossibilita' per il Committente di
+emettere documenti, il Fornitore si impegna a prendere in carico la segnalazione entro due ore
+lavorative e a ripristinare il servizio entro otto ore lavorative. Per i guasti non bloccanti
+i termini sono rispettivamente di un giorno lavorativo e di cinque giorni lavorativi. Il
+mancato rispetto dei termini di ripristino per i guasti bloccanti comporta una penale pari al
+dieci per cento del canone mensile per ogni giorno di ritardo, fino a un massimo del cinquanta
+per cento del canone annuo.
+
+Articolo 5 - Proprieta' intellettuale
+Il codice sorgente sviluppato su misura per il Committente e' di proprieta' del Committente a
+partire dal saldo dell'ultima fattura di realizzazione. Restano di proprieta' del Fornitore le
+librerie e i componenti di uso generale gia' esistenti alla data di sottoscrizione, che
+vengono concessi in licenza d'uso perpetua, non esclusiva e non trasferibile. Il Committente
+non puo' rivendere a terzi il sistema nel suo complesso senza il consenso scritto del
+Fornitore.
+
+Articolo 6 - Trattamento dei dati personali
+Il Fornitore agisce quale responsabile del trattamento ai sensi dell'articolo 28 del
+Regolamento UE 2016/679. I dati sono conservati su server situati nell'Unione Europea. Il
+Fornitore si impegna a notificare al Committente qualunque violazione dei dati entro
+ventiquattro ore dalla scoperta. Alla cessazione del rapporto i dati saranno restituiti in
+formato aperto e cancellati dai sistemi del Fornitore entro trenta giorni.
+
+Articolo 7 - Riservatezza
+Le parti si impegnano a mantenere riservata ogni informazione tecnica, commerciale e
+organizzativa appresa in ragione del presente contratto, per tutta la durata dello stesso e
+per i tre anni successivi alla sua cessazione.
+
+Articolo 8 - Subappalto
+Il Fornitore puo' avvalersi di collaboratori esterni per attivita' specifiche, previa
+comunicazione scritta al Committente, restando unico responsabile nei confronti dello stesso.
+
+Articolo 9 - Recesso
+Il Committente puo' recedere in qualunque momento dalla sola parte relativa alla manutenzione,
+con preavviso di sessanta giorni, corrispondendo i canoni maturati fino alla data di efficacia
+del recesso. Non e' previsto il recesso dalla parte relativa alla realizzazione una volta
+avviata la fase di sviluppo.
+
+Articolo 10 - Foro competente
+Per ogni controversia relativa all'interpretazione e all'esecuzione del presente contratto e'
+competente in via esclusiva il Foro di Livorno. E' esclusa la clausola compromissoria.
+
+Allegato A - Cronoprogramma
+Analisi e disegno: quattro settimane. Sviluppo del nucleo: dieci settimane. Migrazione dei
+dati storici: tre settimane, in parallelo allo sviluppo. Ambiente di prova e correzioni: tre
+settimane. Formazione del personale: due giornate non consecutive. Collaudo e avvio: due
+settimane. Totale previsto: ventidue settimane dalla firma.
+
+Allegato B - Referenti
+Per il Committente: la responsabile amministrativa, reperibile nei giorni feriali dalle 9 alle
+17. Per il Fornitore: la titolare dello studio, con un secondo referente tecnico indicato per
+iscritto entro dieci giorni dalla firma.
