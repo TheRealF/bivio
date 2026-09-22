@@ -1,0 +1,36 @@
+{
+  "nome": "spese",
+  "titolo": "Classificare una spesa dalla descrizione",
+  "per": "Chi tiene la prima nota: liberi professionisti, piccole aziende, studi.",
+  "stato": "La descrizione della spesa: riga dello scontrino, oggetto della fattura, causale del pagamento.",
+  "domande": {
+    "voce": {
+      "tipo": "scelta",
+      "istruzioni": "In che voce di spesa va registrata",
+      "opzioni": {
+        "vitto": "Pasti, bar, ristoranti",
+        "viaggi": "Treni, aerei, taxi, alberghi, carburante",
+        "materiale": "Cancelleria, attrezzature, hardware",
+        "servizi": "Abbonamenti, software, consulenze, hosting",
+        "immobile": "Affitto, utenze, pulizie della sede",
+        "personale": "Stipendi, contributi, formazione dei dipendenti",
+        "altro": "Non rientra in nessuna delle altre"
+      }
+    },
+    "inerente": {
+      "tipo": "si_no",
+      "istruzioni": "La descrizione fa pensare a una spesa dell'attività invece che personale"
+    },
+    "ordine": {
+      "tipo": "numero",
+      "istruzioni": "Ordine di grandezza dell'importo, se la descrizione lo lascia capire",
+      "unita": "euro",
+      "ancore": [
+        {"valore": 10, "descrizione": "Pochi euro"},
+        {"valore": 100, "descrizione": "Qualche decina"},
+        {"valore": 1000, "descrizione": "Qualche centinaio"},
+        {"valore": 10000, "descrizione": "Migliaia"}
+      ]
+    }
+  }
+}

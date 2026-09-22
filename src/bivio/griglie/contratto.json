@@ -1,0 +1,28 @@
+{
+  "nome": "contratto",
+  "titolo": "Prima lettura di un contratto",
+  "per": "Chi si trova a firmare contratti di fornitura senza avere un legale in casa.",
+  "stato": "Il testo del contratto, o la parte che ti interessa.",
+  "domande": {
+    "rinnovo_tacito": {"tipo": "si_no", "istruzioni": "Il contratto si rinnova da solo se nessuno disdice"},
+    "pagamento_oltre_30": {"tipo": "si_no", "istruzioni": "Il termine di pagamento supera i 30 giorni"},
+    "penali_a_mio_carico": {"tipo": "si_no", "istruzioni": "Sono previste penali a carico di chi compra"},
+    "recesso_libero": {"tipo": "si_no", "istruzioni": "Chi compra può recedere quando vuole"},
+    "foro_lontano": {"tipo": "si_no", "istruzioni": "Le controversie vanno a un foro diverso da quello di chi compra"},
+    "dati_fuori_ue": {"tipo": "si_no", "istruzioni": "I dati personali possono essere trattati fuori dall'Unione Europea"},
+    "sbilanciato": {
+      "tipo": "voto",
+      "istruzioni": "Quanto il contratto è sbilanciato a sfavore di chi compra",
+      "livelli": ["Equilibrato", "Un po' sbilanciato", "Molto sbilanciato"]
+    },
+    "chi_lo_guarda": {
+      "tipo": "scelta",
+      "istruzioni": "Chi deve leggerlo prima della firma",
+      "opzioni": {
+        "nessuno": "Si può firmare così",
+        "amministrazione": "Da guardare per i termini di pagamento",
+        "avvocato": "Ci sono clausole che vanno viste da un legale"
+      }
+    }
+  }
+}

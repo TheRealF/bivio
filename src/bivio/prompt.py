@@ -33,31 +33,52 @@ def sistema(personalizzato: str | None = None) -> str:
     return (personalizzato or SISTEMA).strip()
 
 
-def prefisso(stato, personalizzato: str | None = None, chatml: bool = True) -> str:
+# I tre modi di incorniciare un turno. Il modello giusto non si indovina: si
+# legge dal GGUF (`tokenizer.chat_template`), perche' scrivere a un modello con
+# i marcatori di un altro vuol dire parlargli in una lingua che non ha mai visto.
+CORNICI = {
+    "chatml": ("<|im_start|>system\n{sistema}<|im_end|>\n<|im_start|>user\n",
+               "<|im_end|>\n<|im_start|>assistant\n"),
+    "llama3": ("<|start_header_id|>system<|end_header_id|>\n\n{sistema}<|eot_id|>"
+               "<|start_header_id|>user<|end_header_id|>\n\n",
+               "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"),
+    "piano": ("{sistema}\n\n", "\n"),
+}
+
+
+def riconosci(modello_template: str | None) -> str:
+    """Da che cosa e' scritto nel GGUF a quale cornice usare."""
+    t = modello_template or ""
+    if "<|im_start|>" in t:
+        return "chatml"
+    if "<|start_header_id|>" in t:
+        return "llama3"
+    if "[INST]" in t:
+        return "piano"      # Mistral: la cornice non porta un turno di sistema
+    return "piano"
+
+
+def prefisso(stato, personalizzato: str | None = None, cornice: str = "chatml") -> str:
     """La meta' condivisa: istruzioni e stato."""
+    apre, _ = CORNICI.get(cornice, CORNICI["piano"])
     corpo = f"STATO\n{_testo(stato).strip()}\n\n"
-    if chatml:
-        return (
-            "<|im_start|>system\n" + sistema(personalizzato) + "<|im_end|>\n"
-            "<|im_start|>user\n" + corpo
-        )
-    return sistema(personalizzato) + "\n\n" + corpo
+    return apre.format(sistema=sistema(personalizzato)) + corpo
 
 
-def suffisso(domanda: Domanda, chatml: bool = True) -> str:
+def suffisso(domanda: Domanda, cornice: str = "chatml") -> str:
     """La meta' che cambia: la domanda come scelta multipla."""
+    _, chiude = CORNICI.get(cornice, CORNICI["piano"])
     corpo = (
         "DOMANDA\n" + domanda.istruzioni.strip() + "\n\n"
         "OPZIONI\n" + domanda.blocco() + "\n"
     )
-    if chatml:
-        return corpo + "<|im_end|>\n<|im_start|>assistant\n" + CHIUSURA
-    return corpo + "\n" + CHIUSURA
+    return corpo + chiude + CHIUSURA
 
 
-def intero(stato, domanda: Domanda, personalizzato: str | None = None, chatml: bool = True) -> str:
+def intero(stato, domanda: Domanda, personalizzato: str | None = None,
+           cornice: str = "chatml") -> str:
     """Il prompt completo: serve alle prove e a chi vuole vedere che cosa parte."""
-    return prefisso(stato, personalizzato, chatml) + suffisso(domanda, chatml)
+    return prefisso(stato, personalizzato, cornice) + suffisso(domanda, cornice)
 
 
 def lettere(domanda: Domanda) -> list[str]:

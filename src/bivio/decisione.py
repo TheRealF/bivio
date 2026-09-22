@@ -65,12 +65,15 @@ class Bivio:
         taratura: dict | None = None,
         verboso: bool = False,
         scarica: bool = False,
+        cornice: str | None = None,
     ):
         percorso = modelli.percorso(modello)
         if scarica and not modelli.presente(modello):
             modelli.scarica(modello)
         self.motore = Motore(percorso, n_ctx=contesto, n_gpu_layers=gpu,
                              n_threads=thread, verboso=verboso)
+        if cornice:
+            self.motore.cornice = cornice
         self.motore.prepara_lettere(mod_prompt.CHIUSURA)
         self.sistema = sistema
         self.astensione = astensione
@@ -111,13 +114,13 @@ class Bivio:
         fuori: dict[str, dict] = {}
 
         with self._lucchetto:
-            testo_prefisso = mod_prompt.prefisso(stato, self.sistema)
+            testo_prefisso = mod_prompt.prefisso(stato, self.sistema, self.motore.cornice)
             token_prefisso = self.motore.token(testo_prefisso, inizio=True)
             self.motore.fissa_prefisso(token_prefisso, misure)
 
             for domanda in preparate:
                 lettere = mod_prompt.lettere(domanda)
-                suffisso = self.motore.token(mod_prompt.suffisso(domanda))
+                suffisso = self.motore.token(mod_prompt.suffisso(domanda, self.motore.cornice))
                 t = self._temperatura(domanda)
                 prob, logit = self.motore.distribuzione(suffisso, lettere, t, misure)
                 corpo = leggi(domanda, prob)
@@ -152,7 +155,7 @@ class Bivio:
 
     def impronta(self) -> str:
         """Pesi + prompt + taratura: due impronte diverse, due tarature diverse."""
-        pezzi = [self.motore.impronta_pesi, mod_prompt.VERSIONE,
+        pezzi = [self.motore.impronta_pesi, mod_prompt.VERSIONE + "-" + self.motore.cornice,
                  self.taratura.get("impronta", "nessuna") if self.taratura else "nessuna"]
         return "/".join(pezzi)
 

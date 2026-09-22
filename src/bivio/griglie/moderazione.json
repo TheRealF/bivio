@@ -1,0 +1,20 @@
+{
+  "nome": "moderazione",
+  "titolo": "Primo filtro su un commento",
+  "per": "Chi tiene una pagina, un gruppo o i commenti di un sito, e non vuole mandare i testi degli utenti a un servizio esterno.",
+  "stato": "Il commento, così com'è stato scritto.",
+  "domande": {
+    "offensivo": {"tipo": "si_no", "istruzioni": "Il commento insulta o attacca una persona"},
+    "spam": {"tipo": "si_no", "istruzioni": "Il commento è pubblicità o un tentativo di truffa"},
+    "dati_personali": {"tipo": "si_no", "istruzioni": "Il commento contiene dati personali di qualcuno: numeri, indirizzi, dati di salute"},
+    "azione": {
+      "tipo": "scelta",
+      "istruzioni": "Che cosa farne",
+      "opzioni": {
+        "pubblica": "Va bene così",
+        "guarda": "Lo guarda una persona prima di pubblicarlo",
+        "blocca": "Non va pubblicato"
+      }
+    }
+  }
+}

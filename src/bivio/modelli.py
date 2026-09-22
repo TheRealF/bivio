@@ -41,6 +41,19 @@ CATALOGO: dict[str, Scheda] = {
         licenza="Apache-2.0",
         nota="Il modello di partenza. 2,5 GB, sta in memoria su qualunque macchina recente.",
     ),
+    "minerva": Scheda(
+        chiave="minerva",
+        file="minerva-7b-instruct-v1.0-q4_k_m.gguf",
+        url=(
+            "https://huggingface.co/sapienzanlp/Minerva-7B-instruct-v1.0-GGUF/"
+            "resolve/main/minerva-7b-instruct-v1.0-q4_k_m.gguf"
+        ),
+        byte=4478676576,
+        licenza="Apache-2.0",
+        nota=("Minerva 7B della Sapienza, addestrato da zero sull'italiano. "
+              "Piu' grande, piu' lento, e sui miei casi risponde peggio: "
+              "i numeri stanno in risultati/."),
+    ),
     "1.7b": Scheda(
         chiave="1.7b",
         file="Qwen3-1.7B-Q8_0.gguf",

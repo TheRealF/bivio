@@ -10,6 +10,9 @@ Bivio fa una cosa sola: gli dai uno stato e una domanda, e ti torna **un dato de
 tipo che hai chiesto, con la sua probabilità**. Un sì o no, una scelta fra opzioni,
 un voto su una scala, un numero. Senza generare un token, sul tuo computer.
 
+È fatto per l'italiano: le domande pronte sono quelle che si fanno qui, i casi su
+cui l'ho misurato sono italiani, e i dati dei tuoi clienti restano sul tuo disco.
+
 L'idea è di **Jev**, il *System One model* di TypeSafe AI. Jev però è chiuso, sta
 sui loro server e si entra per lista d'attesa. Questo è lo stesso modo di
 programmare con un modello aperto, e parla la stessa API: se hai scritto qualcosa
@@ -183,6 +186,87 @@ utenti non escono di casa), instradare fra modello economico e modello caro,
 controllare se un campo estratto sta davvero nel documento, etichettare diecimila
 documenti in una notte, e tutti i posti dove i dati non possono uscire.
 
+## Fatto per l'italiano
+
+Di implementazioni aperte dell'idea di Jev ce ne sono già, e sono buone:
+[SemIf](https://github.com/TheoLeeCJ/SemIf) e
+[Rizzo Flow](https://github.com/Rizzo-AI-Academy/rizzo-flow). Bivio l'ho scritto per
+le quattro cose di questa sezione.
+
+### Le domande sono già scritte
+
+La libreria è la parte facile. Il lavoro vero sta nel decidere quali domande fare e
+con che opzioni, e nel pacchetto ci sono quattro griglie pronte: sono i lavori che si
+fanno qui.
+
+```bash
+bivio griglie                                   # vedi quali ci sono
+bivio decidi --griglia spese "Biglietto Frecciarossa Livorno-Roma, 89 euro"
+bivio griglie contratto > mia-griglia.json      # copiala e cambiala
+```
+
+| griglia | che cosa chiede | per chi |
+| --- | --- | --- |
+| `assistenza` | reparto, urgenza, quanto è scontento, se serve una persona | chi risponde ai clienti |
+| `spese` | voce di spesa, se è inerente, ordine di grandezza | chi tiene la prima nota |
+| `contratto` | rinnovo tacito, termini, penali, foro, chi deve leggerlo | chi firma senza un legale in casa |
+| `moderazione` | offese, spam, dati personali, che farne | chi tiene una pagina o dei commenti |
+
+Sono un punto di partenza, non una verità: le voci di spesa sono quelle di un libero
+professionista, e il tuo commercialista ne vuole altre. Copiare il file e cambiarlo è
+il modo previsto di usarle.
+
+```python
+from bivio import Bivio, griglia
+
+b = Bivio()
+r = b.decidi("Il bonifico l'ho fatto il 3 ma risulta ancora non pagato.",
+             griglia("assistenza")["domande"])
+r["reparto"].valore          # 'amministrazione'
+r["serve_persona"].valore    # True
+```
+
+### I casi su cui è misurato sono italiani
+
+I 37 casi di [`prove/dati/`](prove/dati/) sono in italiano e parlano di cose che
+succedono qui: ticket, clausole di pagamento a sessanta giorni, documenti di
+trasporto, voci di spesa, un contratto di fornitura da 1.600 token. Le fixture di
+SemIf, che sono il metro di paragone del settore, sono in inglese, e un modello che
+va bene in inglese non è detto che vada bene in italiano. Adesso c'è un modo di
+guardarlo, e chiunque può aggiungerci i propri casi.
+
+### Il modello italiano l'ho provato, e perde
+
+**Minerva-7B-instruct** della Sapienza è il modello addestrato da zero sull'italiano,
+è Apache-2.0 e ha il suo GGUF ufficiale. Sembrava la scelta naturale, quindi l'ho
+messo nel catalogo (`bivio scarica --modello minerva`) e l'ho misurato sugli stessi
+casi, con lo stesso prompt.
+
+| | Qwen3-4B Q4 | Minerva-7B Q4 |
+| --- | --- | --- |
+| 31 casi etichettati | **30 giuste** | 13 giuste |
+| 6 casi senza risposta, riconosciuti | **5** | 0 |
+| per decisione | **188 ms** | 334 ms |
+| il file | **2,5 GB** | 4,5 GB |
+
+⚠️ **Il confronto è onesto su una cosa sola: lo stesso prompt.** Quel prompt l'ho
+scelto guardando come rispondeva Qwen, e Minerva-7B-instruct v1.0 è un modello del
+2024 che non è stato messo a punto per seguire una scelta multipla. Con un prompt
+scritto per lui i numeri cambierebbero, e non so di quanto: se lo provi, aprimi una
+issue, è la cosa più utile che puoi mandarmi.
+
+Per *questo* mestiere conta più quanto un modello segue le istruzioni che la lingua
+in cui è stato addestrato. È una buona notizia per chi deve sceglierlo, e scomoda per
+chi dava il contrario per scontato.
+
+### E i dati restano a casa
+
+In Italia questa roba serve in locale per una ragione che con il costo c'entra poco:
+studi, ambulatori, scuole e uffici pubblici, per mandare i testi dei loro utenti a un
+servizio estero, si mettono in una fila di adempimenti. Bivio gira senza
+rete: stacca il wifi e continua a rispondere. È la stessa ragione per cui i caratteri
+di questo sito stanno sul mio server invece che su quello di Google.
+
 ## Quanto ti puoi fidare
 
 Poco, e lo dico io che l'ho scritto.
@@ -302,7 +386,8 @@ L'ho provato su **una macchina sola**, un Mac con Apple Silicon. Su Windows, Lin
 CUDA o CPU dovrebbe andare e non l'ho verificato: se lo provi, aprimi una issue con
 i tuoi tempi, è la cosa più utile che puoi mandarmi.
 
-Italiano e inglese vanno bene, le altre lingue non le ho misurate. Ed è pensato per
+Italiano e inglese vanno bene, le altre lingue non le ho misurate. Il modello italiano (Minerva) l'ho
+provato e va peggio di Qwen, con il caveat scritto sopra. Ed è pensato per
 `localhost`: niente limiti di traffico, niente irrobustimento, non mettertelo su
 Internet così com'è.
 
@@ -343,9 +428,11 @@ SemIf e un bel campo di prova. Da lì ho preso il controllo che le lettere siano
 token solo e l'idea di pubblicare i numeri con tutti i loro se e ma. Bivio è più
 piccolo e parla italiano: se ti serve un confronto misurato con SemIf, guarda il suo.
 
-Il modello è **[Qwen3-4B-Instruct-2507](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507)**
+Il modello di partenza è **[Qwen3-4B-Instruct-2507](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507)**
 (Apache-2.0), nella conversione GGUF di [unsloth](https://huggingface.co/unsloth), e
-gira su **[llama.cpp](https://github.com/ggml-org/llama.cpp)** (MIT).
+gira su **[llama.cpp](https://github.com/ggml-org/llama.cpp)** (MIT). Nel catalogo c'è
+anche **[Minerva-7B-instruct](https://huggingface.co/sapienzanlp/Minerva-7B-instruct-v1.0-GGUF)**
+del gruppo NLP della Sapienza (Apache-2.0), con il suo GGUF ufficiale.
 
 Bivio è nato per la **Lezione 6** del mio corso gratuito
 [Gen AI per l'automazione dei processi](https://federicoboggia.binatomy.com/corsi/automazione-processi/),

@@ -11,7 +11,9 @@ che hai chiesto con accanto la probabilita'. Senza generare un token.
 """
 
 from .decisione import Bivio, Risposta
+from .griglie import carica as griglia, elenco as griglie
 from .tipi import ErroreDomanda, confidenza
 
 __version__ = "0.1.0"
-__all__ = ["Bivio", "Risposta", "ErroreDomanda", "confidenza", "__version__"]
+__all__ = ["Bivio", "Risposta", "ErroreDomanda", "confidenza", "griglia",
+           "griglie", "__version__"]

@@ -1,0 +1,32 @@
+{
+  "nome": "assistenza",
+  "titolo": "Triage di un messaggio di assistenza",
+  "per": "Chi risponde ai clienti: negozi, studi, assistenza, segreterie.",
+  "stato": "Il testo del messaggio arrivato, così com'è.",
+  "domande": {
+    "reparto": {
+      "tipo": "scelta",
+      "istruzioni": "Chi deve prendere in carico la richiesta",
+      "opzioni": {
+        "amministrazione": "Fatture, pagamenti, rimborsi, dati fiscali",
+        "tecnico": "Errori, guasti, cose che non funzionano",
+        "commerciale": "Preventivi, listini, nuovi lavori",
+        "appuntamenti": "Prenotare, spostare o disdire un appuntamento",
+        "altro": "Non rientra in nessuna delle altre"
+      }
+    },
+    "urgente": {
+      "tipo": "si_no",
+      "istruzioni": "Il messaggio indica un'urgenza o una scadenza vicina"
+    },
+    "scontento": {
+      "tipo": "voto",
+      "istruzioni": "Quanto è scontento chi scrive",
+      "livelli": ["Tranquillo", "Infastidito", "Arrabbiato"]
+    },
+    "serve_persona": {
+      "tipo": "si_no",
+      "istruzioni": "La risposta comporta un prezzo, una data promessa o un dispiacere, quindi la deve scrivere una persona"
+    }
+  }
+}

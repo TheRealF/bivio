@@ -58,13 +58,36 @@ def c_serve(args):
     return 0
 
 
+def c_griglie(args):
+    from .griglie import carica, elenco
+    if args.nome:
+        g = carica(args.nome)
+        print(json.dumps(g, ensure_ascii=False, indent=2))
+        return 0
+    for g in elenco():
+        print(f"{g['nome']:<14} {g['titolo']}  ({g['domande']} domande)")
+        print(f"               {g['per']}")
+    print("\nSi usa cosi':  bivio decidi --griglia assistenza messaggio.txt")
+    print("Per copiarne una e cambiarla:  bivio griglie assistenza > mia.json")
+    return 0
+
+
 def c_decidi(args):
-    with open(args.file, encoding="utf-8") as f:
-        corpo = json.load(f)
-    stato = corpo.get("stato", corpo.get("state"))
-    domande = corpo.get("domande", corpo.get("questions"))
+    if args.griglia:
+        from .griglie import carica
+        domande = carica(args.griglia)["domande"]
+        if os.path.exists(args.file):
+            with open(args.file, encoding="utf-8") as f:
+                stato = f.read()
+        else:
+            stato = args.file          # il testo dato direttamente sulla riga
+    else:
+        with open(args.file, encoding="utf-8") as f:
+            corpo = json.load(f)
+        stato = corpo.get("stato", corpo.get("state"))
+        domande = corpo.get("domande", corpo.get("questions"))
     if stato is None or not domande:
-        print("Il file vuole «stato» e «domande».", file=sys.stderr)
+        print("Il file vuole «stato» e «domande», oppure usa --griglia.", file=sys.stderr)
         return 2
     b = _cervello(args)
     fuori = b.grezzo(stato, domande, astensione=not args.senza_astensione)
@@ -159,9 +182,15 @@ def principale(argv=None) -> int:
     s.add_argument("--chiave", default=None, help="chiede Bearer su /v1 (o BIVIO_API_KEY)")
     s.set_defaults(fai=c_serve)
 
+    s = sotto.add_parser("griglie", help="le domande gia' scritte per i lavori italiani")
+    s.add_argument("nome", nargs="?", help="stampa quella griglia in JSON")
+    s.set_defaults(fai=c_griglie)
+
     s = sotto.add_parser("decidi", help="una richiesta da file, senza server")
     comuni(s)
-    s.add_argument("file")
+    s.add_argument("file", help="un .json con stato e domande, oppure (con --griglia) un file di testo o il testo stesso")
+    s.add_argument("--griglia", default=None,
+                   help="usa una griglia pronta: assistenza, spese, contratto, moderazione")
     s.add_argument("--senza-astensione", action="store_true")
     s.set_defaults(fai=c_decidi)
 

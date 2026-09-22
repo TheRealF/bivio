@@ -67,6 +67,12 @@ class Motore:
             verbose=verboso,
         )
         self._n_vocab = self._llm.n_vocab()
+        # La cornice dei turni si legge dal file, non si indovina: un prompt
+        # scritto con i marcatori di un altro modello e' una lingua mai vista.
+        from . import prompt as _p
+        meta = getattr(self._llm, "metadata", {}) or {}
+        self.template_grezzo = meta.get("tokenizer.chat_template", "")
+        self.cornice = _p.riconosci(self.template_grezzo)
         self._prefisso_token: list[int] = []
         self._lettere: dict[str, int] = {}
         self.stile_lettera = " {}"
@@ -168,6 +174,7 @@ class Motore:
     def salute(self) -> dict:
         return {
             "modello": self.nome,
+            "cornice": self.cornice,
             "file": os.path.basename(self.percorso),
             "sha256": self.impronta_pesi,
             "contesto": self.n_ctx,

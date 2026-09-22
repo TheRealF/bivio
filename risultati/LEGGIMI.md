@@ -26,3 +26,20 @@ prompt v1, Bivio 0.1.0.
 macchina sola. Dicono che gira e che risponde sensato. Non dicono che sia bravo
 quanto Jev o quanto SemIf: per quello servirebbero le loro fixture e il loro
 valutatore, e qui non e' stato fatto.
+
+## 2026-09-22-m5-minerva-7b-q4.json
+
+Stessa macchina, stessi 37 casi, stesso prompt: **Minerva-7B-instruct v1.0**
+della Sapienza, Q4_K_M, cornice llama3 riconosciuta dal GGUF.
+
+- 31 casi etichettati, astensione spenta: **13 giuste** (Qwen3-4B: 30)
+- 6 casi a cui non si puo' rispondere: **0 riconosciuti** (Qwen3-4B: 5)
+- 334 ms a decisione contro 188, e 4,5 GB di file contro 2,5
+
+⚠️ **Il confronto e' onesto su una cosa sola: lo stesso prompt.** Quel prompt
+l'ho scelto guardando come rispondeva Qwen, e Minerva-7B-instruct v1.0 e' un
+modello del 2024 che non e' stato messo a punto per seguire una scelta multipla.
+Con un prompt scritto per lui i numeri cambierebbero, e non so di quanto: se
+qualcuno lo prova, apra una issue. Quello che il confronto mostra non e' che
+l'italiano non serve; e' che per questo mestiere conta piu' quanto un modello
+segue le istruzioni di quanto e' stato addestrato nella lingua giusta.
