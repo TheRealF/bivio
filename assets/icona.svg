@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="bivio">
+  <title>bivio</title>
+  <rect width="512" height="512" rx="116" fill="#c2001c"/>
+  <g stroke="#fff" stroke-width="46" stroke-linecap="round" fill="none">
+    <path d="M256 428 V318"/>
+    <path d="M256 322 L166 214" opacity=".38"/>
+    <path d="M256 322 L346 214"/>
+  </g>
+  <circle cx="152" cy="176" r="32" fill="#fff" opacity=".38"/>
+  <circle cx="360" cy="176" r="32" fill="#fff"/>
+</svg>
