@@ -87,6 +87,10 @@ non serve nessuna chiave. Su Mac con Apple Silicon usa Metal da sé.
 | `bivio serve` | il server e il campo di prova |
 | `bivio prova` | sei decisioni di esempio, per vedere se gira |
 | `bivio decidi esempi/ticket.json` | una richiesta da file, senza server |
+| `bivio molti ticket.jsonl --griglia assistenza` | tante righe in un colpo |
+| `bivio mcp` | Bivio come server MCP, dentro al tuo agente |
+| `bivio portineria portineria.json` | sta fra l'agente e gli altri server MCP |
+| `bivio griglie` | le domande già scritte per i lavori italiani |
 | `bivio taratura miei-dati.jsonl` | cerca la temperatura sui tuoi dati |
 | `bivio modelli` | che modelli conosce e quali hai già |
 
@@ -97,6 +101,22 @@ equivalente da copiare.
 <p align="center">
   <img src="assets/campo.png" alt="il campo di prova di Bivio" width="860">
 </p>
+
+### Cinquecento righe in un colpo
+
+```bash
+bivio molti ticket.jsonl --griglia assistenza --uscita risposte.jsonl
+bivio molti messaggi.txt --griglia moderazione        # una riga per messaggio
+```
+
+Una riga in ingresso, una riga in uscita, con `id`, risposte e confidenza. Il
+modello **si carica una volta sola**: è tutto il senso del comando. Chiamare
+`bivio decidi` dentro a un ciclo della shell ricarica 2,5 GB a ogni riga, e su
+cinquecento ticket vuol dire un'ora buttata per niente.
+
+Una riga storta non ferma le altre: esce con l'errore scritto dentro e il lavoro
+continua. Alla fine il comando esce con 1 se qualcosa è stato saltato, così dentro
+a uno script te ne accorgi.
 
 ### I quattro tipi di domanda
 
@@ -259,6 +279,12 @@ Per *questo* mestiere conta più quanto un modello segue le istruzioni che la li
 in cui è stato addestrato. È una buona notizia per chi deve sceglierlo, e scomoda per
 chi dava il contrario per scontato.
 
+⚠️ **Poi ho misurato *perché* perde, e la risposta è precisa**: su 22 casi Minerva
+cambia risposta **19 volte** solo spostando le opzioni di posto. Non sta leggendo
+male lo stato, sta in buona parte scegliendo per posizione. Il conto sta in
+[«Il bias di posizione»](#il-bias-di-posizione-e-quanto-vale-davvero), e con
+`--giri 3` recupera tre casi su ventidue.
+
 ### E i dati restano a casa
 
 In Italia questa roba serve in locale per una ragione che con il costo c'entra poco:
@@ -315,6 +341,58 @@ sui «no» e sui numeri. È il difetto noto di questi modelli quando gli dai una
 fuga. Per questo di default è spenta. Accendila se hai un ramo «lo guarda una
 persona» dove far finire i dubbi, e misurati quanto ti costa.
 
+### Il bias di posizione, e quanto vale davvero
+
+Chi legge i logit delle lettere eredita per intero il difetto noto della scelta
+multipla: **un modello non pesa un'opzione solo per quello che dice, la pesa anche
+per dove sta**. Era la cosa più imbarazzante da lasciare non misurata, quindi l'ho
+misurata: si fa la stessa domanda con le opzioni girate in tutti i modi e si guarda
+cosa cambia. `python prove/bias.py --modello 4b`, 22 casi.
+
+| | Qwen3-4B | Minerva-7B |
+| --- | --- | --- |
+| di quanto si muove il logit di un'opzione spostandola | 2,43 (max 5,19) | 1,35 (max 2,44) |
+| margine più stretto fra prima e seconda | **7,88** | **0,01** |
+| risposte che **cambiano** solo girando le opzioni | **0 su 22** | **19 su 22** |
+| giuste, una passata sola | 22/22 | 11/22 |
+| giuste, media su tutte le rotazioni | 22/22 | **14/22** |
+
+Le due righe da leggere insieme sono la prima e la seconda. **Il bias c'è anche su
+Qwen**: spostare un'opzione le cambia il punteggio di due punti e mezzo. Solo che
+lì la prima classificata stacca la seconda di quasi otto, quindi due punti e mezzo
+non ribaltano niente. Su Minerva il margine è un centesimo, e allora lo stesso bias
+decide da solo la risposta: diciannove volte su ventidue.
+
+Si toglie così, e costa poco:
+
+```bash
+bivio decidi ticket.json --giri 3     # tre ordini diversi, media delle probabilità
+```
+
+```python
+Bivio(giri=3)
+```
+
+⚠️ **Costa solo la seconda metà del prompt.** Lo stato è già in cache e non si
+rilegge, quindi tre giri su un contratto da 1.559 token costano tre suffissi da
+venti token, non tre letture del contratto. È il motivo per cui qui l'anti-bias ci
+si può permettere e su un'API a token no.
+
+⚠️ **Girano solo `si_no` e `scelta`.** Per `voto` e `numero` l'ordine **è** la
+scala: mescolare «tranquillo, infastidito, furioso» non è la stessa domanda posta
+diversamente, è un'altra domanda. E l'astensione resta in fondo, perché stare in
+fondo fa parte di cosa vuol dire.
+
+⚠️ **Con `--giri` esce anche `instabilita`**, cioè quanto la risposta è cambiata
+fra un ordine e l'altro. Su Minerva la mediana è **0,44**: è il numero da mandare
+a una persona invece che a un `if`, e vale più della confidenza, perché la
+confidenza ti dice quanto il modello è sicuro e questa ti dice quanto è sicuro
+**per il motivo giusto**.
+
+⚠️ **Di default `giri` è 1**, perché tutti i numeri pubblicati qui sopra sono stati
+presi così e cambiando il default non sarebbero più confrontabili. `giri` entra
+nell'impronta della taratura, quindi una taratura fatta a 1 non si applica a 3.
+
 ## La grotta, e la cosa che ho imparato
 
 `esempi/grotta.py` fa combattere un eroe contro un mostro. Il giocatore può essere:
@@ -369,13 +447,132 @@ Il file è legato a un'**impronta** che tiene dentro i pesi, la versione del pro
 la taratura stessa. Se cambi modello non si carica, e te lo dice, invece di darti
 numeri sbagliati in silenzio.
 
+## Dentro a un agente: `bivio mcp` e la portineria
+
+Bivio parla MCP, e lo fa in due modi che sono lo stesso mestiere visto da due lati:
+**decidere in locale, prima che la domanda costi**.
+
+### `bivio mcp`: un giudizio tipizzato dentro al tuo agente
+
+```bash
+bivio mcp
+```
+
+```json
+{"mcpServers": {"bivio": {"command": "bivio", "args": ["mcp"]}}}
+```
+
+Cinque strumenti: `bivio_vero_falso`, `bivio_scegli`, `bivio_voto`, `bivio_griglia`,
+`bivio_griglie`.
+
+A che serve, detto senza giri. Un agente che deve decidere una cosa piccola e
+ripetuta, tipo «questo ticket è urgente?» o «in che cartella va questo file?», oggi
+la chiede a sé stesso: un altro giro di modello grosso, qualche migliaio di token, un
+secondo e mezzo, e una risposta senza un numero attaccato. Qui la stessa domanda è
+una lettura sola, torna con la sua probabilità, e non esce dalla macchina.
+
+⚠️ **Il modello si carica alla prima domanda, non all'avvio.** Sono 2,5 GB: un
+client che fa `tools/list` appena acceso deve avere la lista subito, sennò pensa che
+il server sia morto. Misurato a macchina ferma: `tools/list` **0 ms**, prima domanda
+**0,92 s** (dentro c'è il caricamento del modello), seconda **0,29 s**, una griglia da
+quattro domande **2,1 s**.
+
+⚠️ Questi tempi **ballano**, e di parecchio: le stesse quattro domande della griglia mi
+sono uscite 0,5 s a inizio sessione e 2,5 s dopo un quarto d'ora di banco, sulla stessa
+macchina e con lo stesso codice. Sono una macchina calda contro una fredda. Prendili
+come ordine di grandezza e misurali sulla tua.
+
+⚠️ **Parla le due revisioni.** La **2026-07-28** ha tolto la stretta di mano e ha
+reso il protocollo senza stato; i client installati oggi la fanno ancora, e uno che
+manda `initialize` e non riceve risposta resta lì. Quindi: se arriva si risponde, se
+non arriva si lavora lo stesso. Costa venti righe e copre tutti e due i mondi.
+
+### `bivio portineria`: tre strumenti invece di duecento
+
+```bash
+bivio portineria --esempio > portineria.json   # ci metti i tuoi server
+bivio portineria portineria.json
+```
+
+Un agente con dieci server addosso si porta dietro centomila token di soli schemi
+prima che qualcuno abbia scritto una parola, e più strumenti ha meno ci azzecca a
+sceglierli. La portineria si mette in mezzo, tiene i server veri dietro di sé e in
+contesto ne espone **tre**: `cerca_strumenti`, `usa_strumento`, `elenca_server`.
+Quando serve, `cerca_strumenti` chiede a Bivio quali dei duecento servono a *questa*
+richiesta, e passa solo quelli, con lo schema completo.
+
+E prima di far passare una chiamata la guarda: è irreversibile? porta fuori dati
+personali? sta facendo quello che lo strumento dichiara di fare? Se qualcosa suona,
+torna indietro chiedendo conferma invece di eseguire.
+
+⚠️⚠️ **Il cancello non è una misura di sicurezza, ed è importante che sia scritto.**
+È un classificatore: legge del testo e dice un numero. Chi controlla il testo può
+provare a parlargli intorno, ed è lo stesso identico problema per cui la descrizione
+di uno strumento va considerata non fidata. Serve a prendere gli incidenti e le
+sviste, che sono la maggioranza, **non un avversario**. Le cose che devono valere
+sempre si scrivono in `mai_permessi`, che è meccanico e non si discute.
+
+### Le tre volte che ho sbagliato, e come l'ho scoperto
+
+Questa parte la scrivo perché è l'unica utile: l'idea era giusta e le prime tre
+implementazioni erano da buttare, e **l'ho saputo solo misurando**. Banco: 200
+strumenti finti, 10 richieste in cui lo strumento giusto esiste e non è ambiguo.
+
+**Primo sbaglio: una domanda sì/no per strumento.** Sembrava il modo naturale: la
+richiesta è uno stato, i duecento strumenti sono duecento domande su quella lettura,
+che è esattamente quello che Bivio fa bene. Misurato: **29 secondi**, e
+chiedendo «devo aprire una issue su GitHub» tornava `cerca_contatto`. Il secondo
+difetto è più interessante del primo: a «questo strumento serve?» il modello dice sì
+a qualunque cosa sia vagamente in tema, le probabilità si accalcano vicino a 1 e
+l'ordine che ne esce è rumore. **Una scelta costringe al confronto, un sì/no no.**
+
+**Secondo sbaglio: il torneo a gironi.** Venticinque per volta, chi vince va in
+finale: nove domande invece di duecento. Le scelte sono migliorate, il tempo **no**,
+26 secondi. Perché non erano le domande a costare: erano gli **undicimila token di
+descrizioni** che il modello doveva leggere comunque. Nessun torneo li toglie.
+
+**Quello che funziona: il codice prima, il modello dopo.** Quali strumenti siano
+*plausibili* è meccanico: le parole della richiesta e quelle del nome si
+sovrappongono oppure no, e un `set` lo dice gratis. Quale sia *giusto* è giudizio, e
+resta al modello. Il filtro porta duecento a venticinque, il modello sceglie fra
+venticinque.
+
+| su 200 strumenti | primo giusto | fra i primi 5 | mediana |
+| --- | --- | --- | --- |
+| solo il modello, legge tutto | 10/10 | 10/10 | 18,7 s |
+| filtro meccanico, poi il modello | **10/10** | **10/10** | **2,6 s** |
+
+Stessa accuratezza, **sette volte più veloce**. È la stessa riga della Lezione 6 del
+corso: quale mossa sia possibile lo decide il codice, quale sia conveniente lo decide
+il modello.
+
+Si rifà con `python prove/banco_portineria.py`. ⚠️ Il banco è **finto e lo dichiara**:
+duecento strumenti generati incrociando dieci verbi e venti oggetti. Non ti dice come
+va su GitHub o Slack veri, ti dice se il meccanismo regge quando il catalogo è grosso.
+⚠️ E i tempi ballano parecchio con quello che sta facendo la macchina: le prime misure
+mi erano uscite 1,1 s contro 19,1 s perché avevo due banchi in esecuzione insieme che
+si pestavano i piedi sulla GPU. Questi sono presi con la macchina ferma. Il rapporto fra
+le due righe regge, la cifra assoluta è la tua macchina che parla.
+
+⚠️ Se le parole della richiesta non toccano niente, perché è vaga o perché il
+server parla un'altra lingua, il filtro si tira indietro e torna il catalogo intero.
+Meglio lenti che sbagliati. La risposta lo dice in `scremati_a`.
+
+**Poi altri due, trovati da due test che fallivano.** Prendevo solo il vincitore di
+ogni girone, e a chi chiedeva cinque strumenti ne tornava uno: buttavo via le
+probabilità di tutte le altre opzioni, che sono la cosa che Bivio sa dare e un
+embedding no. E la soglia era assoluta: in una scelta le probabilità sommano a 1,
+quindi «almeno 0,5» vuol dire «al massimo uno», e `quanti=5` non sarebbe mai stato
+onorato. Adesso è relativa al migliore.
+
 ## Quello che non fa
 
 Appena installato ti dà probabilità non tarate. `stato: "ok"` vuol dire che il
 modello non si è astenuto, e basta.
 
-Resta un po' di preferenza per la posizione delle opzioni: se le mescoli e rifai la
-domanda, i numeri cambiano un po'. Il rimescolamento automatico non c'è.
+Il rimescolamento delle opzioni c'è ma **è spento di default** (`--giri 1`), perché
+tutti i numeri qui sopra sono presi così. Quanto vale, misurato, sta in
+[«Il bias di posizione»](#il-bias-di-posizione-e-quanto-vale-davvero).
 
 26 opzioni per domanda (Jev ne dichiara 255). Più di così, spezzi in due passi.
 
@@ -393,7 +590,7 @@ Internet così com'è.
 
 ## Com'è fatto dentro
 
-Quattro file corti. `tipi.py` porta una domanda a scelta multipla e riporta una
+Quattro file corti, più `mcp/` che è il livello di sopra. `tipi.py` porta una domanda a scelta multipla e riporta una
 distribuzione a una risposta tipizzata. `prompt.py` scrive il testo, spezzato in due
 metà: la prima (istruzioni + stato) è uguale per tutte le domande della richiesta e
 si calcola una volta, la seconda cambia. `motore.py` parla con llama.cpp, tiene la
@@ -408,7 +605,7 @@ campionamento, niente ciclo di decodifica: `output_tokens: 0` è vero alla lette
 ```bash
 git clone https://github.com/TheRealF/bivio && cd bivio
 python3 -m venv .venv && ./.venv/bin/pip install -e ".[prove]"
-./.venv/bin/python -m pytest prove -q             # 24 prove, senza pesi
+./.venv/bin/python -m pytest prove -q             # 64 prove, senza pesi
 BIVIO_REALE=1 ./.venv/bin/python -m pytest -q     # 4 in più, sul modello vero
 ```
 

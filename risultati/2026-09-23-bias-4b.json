@@ -1,0 +1,427 @@
+{
+ "data": "2026-09-23",
+ "modello": "Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+ "impronta": "9e06f32e61f4eae3549c57e5f552c986/v1-chatml-g2/nessuna",
+ "casi": 22,
+ "secondi": 22.9,
+ "giuste_giri_1": 22,
+ "giuste_giri_n": 22,
+ "cambiano_ruotando": 0,
+ "spostamento_logit_medio": 2.427,
+ "spostamento_logit_massimo": 5.187,
+ "margine_piu_stretto": 7.88,
+ "instabilita_mediana": 0.0,
+ "righe": [
+  {
+   "nome": "urgenza",
+   "attesa": "si",
+   "opzioni": 2,
+   "base": "si",
+   "ruotata": "si",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 0.756,
+   "margine_min": 15.969,
+   "margine_max": 16.817,
+   "logit_attesa_per_posto": {
+    "0": 43.92,
+    "1": 43.58
+   }
+  },
+  {
+   "nome": "urgenza",
+   "attesa": "no",
+   "opzioni": 2,
+   "base": "no",
+   "ruotata": "no",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 2.709,
+   "margine_min": 17.255,
+   "margine_max": 21.868,
+   "logit_attesa_per_posto": {
+    "1": 44.08,
+    "0": 44.48
+   }
+  },
+  {
+   "nome": "urgenza",
+   "attesa": "si",
+   "opzioni": 2,
+   "base": "si",
+   "ruotata": "si",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 0.09,
+   "margine_min": 17.619,
+   "margine_max": 17.762,
+   "logit_attesa_per_posto": {
+    "0": 44.21,
+    "1": 44.19
+   }
+  },
+  {
+   "nome": "urgenza",
+   "attesa": "no",
+   "opzioni": 2,
+   "base": "no",
+   "ruotata": "no",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 2.985,
+   "margine_min": 17.892,
+   "margine_max": 21.903,
+   "logit_attesa_per_posto": {
+    "1": 43.54,
+    "0": 44.52
+   }
+  },
+  {
+   "nome": "reparto",
+   "attesa": "pagamenti",
+   "opzioni": 3,
+   "base": "pagamenti",
+   "ruotata": "pagamenti",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 1.754,
+   "margine_min": 13.612,
+   "margine_max": 14.587,
+   "logit_attesa_per_posto": {
+    "0": 34.3,
+    "2": 32.96,
+    "1": 33.65
+   }
+  },
+  {
+   "nome": "reparto",
+   "attesa": "tecnico",
+   "opzioni": 3,
+   "base": "tecnico",
+   "ruotata": "tecnico",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 2.385,
+   "margine_min": 14.268,
+   "margine_max": 15.791,
+   "logit_attesa_per_posto": {
+    "1": 34.33,
+    "0": 35.72,
+    "2": 32.37
+   }
+  },
+  {
+   "nome": "reparto",
+   "attesa": "commerciale",
+   "opzioni": 3,
+   "base": "commerciale",
+   "ruotata": "commerciale",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 1.381,
+   "margine_min": 10.603,
+   "margine_max": 13.708,
+   "logit_attesa_per_posto": {
+    "2": 32.18,
+    "1": 32.82,
+    "0": 34.12
+   }
+  },
+  {
+   "nome": "reparto",
+   "attesa": "pagamenti",
+   "opzioni": 3,
+   "base": "pagamenti",
+   "ruotata": "pagamenti",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0001,
+   "spostamento": 4.726,
+   "margine_min": 9.619,
+   "margine_max": 13.501,
+   "logit_attesa_per_posto": {
+    "0": 35.47,
+    "2": 34.2,
+    "1": 32.24
+   }
+  },
+  {
+   "nome": "clausola",
+   "attesa": "si",
+   "opzioni": 2,
+   "base": "si",
+   "ruotata": "si",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 3.024,
+   "margine_min": 9.87,
+   "margine_max": 11.802,
+   "logit_attesa_per_posto": {
+    "0": 41.87,
+    "1": 43.93
+   }
+  },
+  {
+   "nome": "clausola",
+   "attesa": "no",
+   "opzioni": 2,
+   "base": "no",
+   "ruotata": "no",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 3.058,
+   "margine_min": 15.144,
+   "margine_max": 21.259,
+   "logit_attesa_per_posto": {
+    "1": 42.46,
+    "0": 39.42
+   }
+  },
+  {
+   "nome": "clausola",
+   "attesa": "si",
+   "opzioni": 2,
+   "base": "si",
+   "ruotata": "si",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 1.524,
+   "margine_min": 16.007,
+   "margine_max": 16.157,
+   "logit_attesa_per_posto": {
+    "0": 40.14,
+    "1": 38.69
+   }
+  },
+  {
+   "nome": "clausola",
+   "attesa": "no",
+   "opzioni": 2,
+   "base": "no",
+   "ruotata": "no",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 1.561,
+   "margine_min": 16.426,
+   "margine_max": 19.548,
+   "logit_attesa_per_posto": {
+    "1": 39.43,
+    "0": 39.31
+   }
+  },
+  {
+   "nome": "lingua",
+   "attesa": "inglese",
+   "opzioni": 3,
+   "base": "inglese",
+   "ruotata": "inglese",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 2.308,
+   "margine_min": 11.579,
+   "margine_max": 13.95,
+   "logit_attesa_per_posto": {
+    "1": 32.47,
+    "0": 35.11,
+    "2": 35.34
+   }
+  },
+  {
+   "nome": "lingua",
+   "attesa": "italiano",
+   "opzioni": 3,
+   "base": "italiano",
+   "ruotata": "italiano",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0001,
+   "spostamento": 4.682,
+   "margine_min": 9.141,
+   "margine_max": 13.16,
+   "logit_attesa_per_posto": {
+    "0": 35.82,
+    "2": 39.07,
+    "1": 36.14
+   }
+  },
+  {
+   "nome": "spesa",
+   "attesa": "vitto",
+   "opzioni": 4,
+   "base": "vitto",
+   "ruotata": "vitto",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 2.944,
+   "margine_min": 12.994,
+   "margine_max": 16.571,
+   "logit_attesa_per_posto": {
+    "0": 35.3,
+    "3": 34.35,
+    "2": 33.13,
+    "1": 30.95
+   }
+  },
+  {
+   "nome": "spesa",
+   "attesa": "viaggi",
+   "opzioni": 4,
+   "base": "viaggi",
+   "ruotata": "viaggi",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 3.147,
+   "margine_min": 13.76,
+   "margine_max": 16.715,
+   "logit_attesa_per_posto": {
+    "1": 30.96,
+    "0": 36.2,
+    "3": 31.73,
+    "2": 32.72
+   }
+  },
+  {
+   "nome": "spesa",
+   "attesa": "materiale",
+   "opzioni": 4,
+   "base": "materiale",
+   "ruotata": "materiale",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 2.44,
+   "margine_min": 13.849,
+   "margine_max": 16.798,
+   "logit_attesa_per_posto": {
+    "2": 33.54,
+    "1": 32.63,
+    "0": 36.15,
+    "3": 32.96
+   }
+  },
+  {
+   "nome": "adatto",
+   "attesa": "parole_semplici",
+   "opzioni": 3,
+   "base": "parole_semplici",
+   "ruotata": "parole_semplici",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 1.302,
+   "margine_min": 14.042,
+   "margine_max": 14.811,
+   "logit_attesa_per_posto": {
+    "0": 34.68,
+    "2": 33.35,
+    "1": 34.34
+   }
+  },
+  {
+   "nome": "adatto",
+   "attesa": "professionisti",
+   "opzioni": 3,
+   "base": "professionisti",
+   "ruotata": "professionisti",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 2.361,
+   "margine_min": 12.31,
+   "margine_max": 14.508,
+   "logit_attesa_per_posto": {
+    "1": 32.78,
+    "0": 34.9,
+    "2": 33.66
+   }
+  },
+  {
+   "nome": "adatto",
+   "attesa": "primo_lavoro",
+   "opzioni": 3,
+   "base": "primo_lavoro",
+   "ruotata": "primo_lavoro",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0003,
+   "spostamento": 1.658,
+   "margine_min": 7.88,
+   "margine_max": 10.283,
+   "logit_attesa_per_posto": {
+    "2": 36.61,
+    "1": 36.42,
+    "0": 35.75
+   }
+  },
+  {
+   "nome": "consegna",
+   "attesa": "si",
+   "opzioni": 2,
+   "base": "si",
+   "ruotata": "si",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 1.412,
+   "margine_min": 12.599,
+   "margine_max": 15.422,
+   "logit_attesa_per_posto": {
+    "0": 37.27,
+    "1": 38.96
+   }
+  },
+  {
+   "nome": "consegna",
+   "attesa": "no",
+   "opzioni": 2,
+   "base": "no",
+   "ruotata": "no",
+   "giusta_base": true,
+   "giusta_ruotata": true,
+   "cambia": false,
+   "instabilita": 0.0,
+   "spostamento": 5.187,
+   "margine_min": 15.845,
+   "margine_max": 17.31,
+   "logit_attesa_per_posto": {
+    "1": 36.29,
+    "0": 40.75
+   }
+  }
+ ]
+}

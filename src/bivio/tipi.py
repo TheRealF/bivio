@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 # Le opzioni speciali. Occupano una lettera come tutte le altre, quindi
@@ -80,6 +80,42 @@ class Domanda:
     def blocco(self) -> str:
         righe = [o.riga(LETTERE[i]) for i, o in enumerate(self.opzioni)]
         return "\n".join(righe)
+
+
+def ruota(domanda: Domanda, k: int) -> tuple[Domanda, list[int]]:
+    """La stessa domanda con le opzioni fatte girare di k posti.
+
+    Serve contro il **bias di posizione**: un modello a scelta multipla non
+    pesa le opzioni solo per quello che dicono, pesa anche dove stanno, e la
+    prima lettera parte avvantaggiata. Leggendo i logit delle lettere il
+    difetto si eredita tutto, quindi il modo per toglierlo e' fare la stessa
+    domanda con le opzioni in ordine diverso e mettere insieme le risposte.
+
+    ⚠️ Girano solo le opzioni **utili**. Le speciali (l'astensione, il fuori
+    scala) restano in fondo dove sono, perche' la loro posizione e' parte di
+    quello che vogliono dire. E per «voto» e «numero» non si ruota affatto:
+    li' l'ordine e' la scala, e mescolarla e' un'altra domanda.
+
+    Torna (domanda girata, indici) dove `indici[j]` dice quale opzione
+    dell'originale sta al posto j, cosi' le probabilita' tornano a casa.
+    """
+    utili = domanda.utili
+    n = len(utili)
+    if n < 2 or k % n == 0:
+        return domanda, list(range(len(domanda.opzioni)))
+    k %= n
+    girati = utili[k:] + utili[:k]
+    indici = girati + [i for i, o in enumerate(domanda.opzioni) if o.speciale]
+    nuova = replace(domanda, opzioni=[domanda.opzioni[i] for i in indici])
+    if domanda.valori:
+        # I valori seguono le opzioni utili, che sono le prime len(valori).
+        nuova = replace(nuova, valori=[domanda.valori[utili.index(i)] for i in girati])
+    return nuova, indici
+
+
+def ruotabile(domanda: Domanda) -> bool:
+    """Per «voto» e «numero» l'ordine e' la scala e non si tocca."""
+    return domanda.tipo in ("si_no", "scelta") and len(domanda.utili) >= 2
 
 
 # --------------------------------------------------------------------------

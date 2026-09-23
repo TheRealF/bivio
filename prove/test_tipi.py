@@ -6,7 +6,7 @@ import math
 
 import pytest
 
-from bivio.tipi import (INSUFFICIENTE, Domanda, ErroreDomanda, confidenza,
+from bivio.tipi import (INSUFFICIENTE, Domanda, ErroreDomanda, confidenza, ruota, ruotabile,
                         costruisci, leggi)
 
 
@@ -113,3 +113,41 @@ def test_soglia_incerta():
                          "opzioni": {"a": "", "b": ""}}, astensione=False)
     assert leggi(d, [0.6, 0.4])["stato"] == "incerto"
     assert leggi(d, [0.95, 0.05])["stato"] == "ok"
+
+
+# ---------------------------------------------------------------- rotazione
+
+def test_ruota_gira_solo_le_utili():
+    d = costruisci("r", {"tipo": "scelta", "istruzioni": "x",
+                         "opzioni": {"a": "", "b": "", "c": ""}}, astensione=True)
+    speciali_prima = [o.id for o in d.opzioni if o.speciale]
+    girata, indici = ruota(d, 1)
+    assert [o.id for o in girata.opzioni][:3] == ["b", "c", "a"]
+    # l'astensione resta in fondo: la sua posizione fa parte di cosa vuol dire
+    assert [o.id for o in girata.opzioni if o.speciale] == speciali_prima
+    assert [o.id for o in girata.opzioni][3:] == speciali_prima
+    # gli indici riportano ogni probabilita' al suo posto
+    assert [d.opzioni[i].id for i in indici] == [o.id for o in girata.opzioni]
+
+
+def test_ruota_a_giro_zero_non_tocca_niente():
+    d = costruisci("r", {"tipo": "scelta", "istruzioni": "x",
+                         "opzioni": {"a": "", "b": ""}}, astensione=False)
+    girata, indici = ruota(d, 0)
+    assert girata is d and indici == [0, 1]
+
+
+def test_voto_e_numero_non_si_ruotano():
+    voto = costruisci("v", {"tipo": "voto", "istruzioni": "x",
+                            "livelli": ["basso", "medio", "alto"]}, astensione=False)
+    assert ruotabile(voto) is False
+    scelta = costruisci("s", {"tipo": "scelta", "istruzioni": "x",
+                              "opzioni": {"a": "", "b": ""}}, astensione=False)
+    assert ruotabile(scelta) is True
+
+
+def test_una_opzione_sola_non_e_ruotabile():
+    d = costruisci("s", {"tipo": "si_no", "istruzioni": "x"}, astensione=False)
+    assert ruotabile(d) is True          # si_no ha due opzioni
+    girata, _ = ruota(d, 1)
+    assert [o.id for o in girata.opzioni][:2] == ["no", "si"]

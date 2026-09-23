@@ -17,7 +17,7 @@ from typing import Any
 
 from . import modelli, prompt as mod_prompt
 from .motore import Misure, Motore
-from .tipi import Domanda, ErroreDomanda, costruisci, leggi
+from .tipi import Domanda, ErroreDomanda, costruisci, leggi, ruota, ruotabile
 
 
 @dataclass
@@ -66,6 +66,7 @@ class Bivio:
         verboso: bool = False,
         scarica: bool = False,
         cornice: str | None = None,
+        giri: int = 1,
     ):
         percorso = modelli.percorso(modello)
         if scarica and not modelli.presente(modello):
@@ -77,6 +78,7 @@ class Bivio:
         self.motore.prepara_lettere(mod_prompt.CHIUSURA)
         self.sistema = sistema
         self.astensione = astensione
+        self.giri = max(1, int(giri))
         self.taratura = taratura or {}
         self._lucchetto = threading.Lock()
         self.motore.scalda()
@@ -119,13 +121,8 @@ class Bivio:
             self.motore.fissa_prefisso(token_prefisso, misure)
 
             for domanda in preparate:
-                lettere = mod_prompt.lettere(domanda)
-                suffisso = self.motore.token(mod_prompt.suffisso(domanda, self.motore.cornice))
                 t = self._temperatura(domanda)
-                prob, logit = self.motore.distribuzione(suffisso, lettere, t, misure)
-                corpo = leggi(domanda, prob)
-                corpo["logit"] = {l: round(x, 4) for l, x in zip(lettere, logit)}
-                corpo["lettere"] = {l: o.id for l, o in zip(lettere, domanda.opzioni)}
+                corpo = self._una(domanda, t, misure)
                 corpo["temperatura"] = round(t, 4)
                 fuori[domanda.nome] = corpo
 
@@ -147,6 +144,49 @@ class Bivio:
             "impronta": self.impronta(),
         }
 
+    def _una(self, domanda: Domanda, t: float, misure: Misure) -> dict:
+        """Una domanda, eventualmente chiesta piu' volte con le opzioni girate.
+
+        Il giro costa solo la seconda meta' del prompt: lo stato e' gia' in
+        cache e non si ricalcola. E' il motivo per cui qui l'anti-bias si puo'
+        permettere, mentre su un'API a token costerebbe come rifare tutto.
+        """
+        giri = self.giri if ruotabile(domanda) else 1
+        giri = min(giri, len(domanda.utili))
+
+        somma = [0.0] * len(domanda.opzioni)
+        prima: tuple[list[str], list[float]] | None = None
+        per_giro: list[dict[str, float]] = []
+
+        for k in range(giri):
+            girata, indici = ruota(domanda, k)
+            lettere = mod_prompt.lettere(girata)
+            suffisso = self.motore.token(mod_prompt.suffisso(girata, self.motore.cornice))
+            prob, logit = self.motore.distribuzione(suffisso, lettere, t, misure)
+            for posto, orig in enumerate(indici):
+                somma[orig] += prob[posto]
+            per_giro.append({girata.opzioni[i].id: round(prob[i], 6)
+                             for i in range(len(prob))})
+            if k == 0:
+                prima = (lettere, logit)
+
+        media = [x / giri for x in somma]
+        corpo = leggi(domanda, media)
+        lettere0, logit0 = prima
+        corpo["logit"] = {l: round(x, 4) for l, x in zip(lettere0, logit0)}
+        corpo["lettere"] = {l: o.id for l, o in zip(lettere0, domanda.opzioni)}
+        if giri > 1:
+            # Quanto la risposta dipende da DOVE stanno le opzioni. Un numero
+            # alto vuol dire che il modello ha cambiato idea spostandole, e
+            # quella risposta non si manda avanti da sola.
+            vinta = max(range(len(media)), key=lambda i: media[i])
+            id_vinta = domanda.opzioni[vinta].id
+            viste = [g.get(id_vinta, 0.0) for g in per_giro]
+            corpo["giri"] = giri
+            corpo["instabilita"] = round(max(viste) - min(viste), 6)
+            corpo["per_giro"] = per_giro
+        return corpo
+
     def _temperatura(self, domanda: Domanda) -> float:
         if domanda.temperatura != 1.0:
             return domanda.temperatura
@@ -155,7 +195,8 @@ class Bivio:
 
     def impronta(self) -> str:
         """Pesi + prompt + taratura: due impronte diverse, due tarature diverse."""
-        pezzi = [self.motore.impronta_pesi, mod_prompt.VERSIONE + "-" + self.motore.cornice,
+        pezzi = [self.motore.impronta_pesi,
+                 mod_prompt.VERSIONE + "-" + self.motore.cornice + f"-g{self.giri}",
                  self.taratura.get("impronta", "nessuna") if self.taratura else "nessuna"]
         return "/".join(pezzi)
 
@@ -164,6 +205,7 @@ class Bivio:
         d["prompt"] = mod_prompt.VERSIONE
         d["impronta"] = self.impronta()
         d["taratura"] = bool(self.taratura)
+        d["giri"] = self.giri
         return d
 
 

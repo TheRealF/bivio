@@ -67,7 +67,18 @@ class Applicazione:
         if stato is None:
             raise ErroreDomanda("manca «stato»")
         astensione = corpo.get("astensione")
-        return self.cervello.grezzo(stato, domande or {}, astensione=astensione)
+        # ⚠️ `giri` si accetta per richiesta perche' e' un compromesso fra
+        # tempo e affidabilita', e chi chiama sa quale dei due gli serve. Il
+        # server e' a un lucchetto solo, quindi si rimette com'era in ogni caso.
+        giri = corpo.get("giri")
+        if giri is None:
+            return self.cervello.grezzo(stato, domande or {}, astensione=astensione)
+        prima = self.cervello.giri
+        try:
+            self.cervello.giri = max(1, int(giri))
+            return self.cervello.grezzo(stato, domande or {}, astensione=astensione)
+        finally:
+            self.cervello.giri = prima
 
 
 def _in_inglese(r: dict) -> dict:
